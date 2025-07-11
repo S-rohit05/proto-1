@@ -12,7 +12,7 @@ app.secret_key = "supersecretkey"  # Change this in production!
 
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = (
-    'postgresql://masteruser:YOUR_PASSWORD@portfolio-dbnew.cnsu4io8otma.ap-south-1.rds.amazonaws.com:5432/portfolioapp'
+    'postgresql://masteruser:ASDZXC12@portfolio-dbnew.cnsu4io8otma.ap-south-1.rds.amazonaws.com:5432/portfolioapp'
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
