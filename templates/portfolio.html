@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Portfolio</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <h2>My Portfolio</h2>
+  <a href="{{ url_for('index') }}" class="btn btn-secondary mb-3">Back to Home</a>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Quantity</th>
+        <th>Buy Price</th>
+        <th>Latest Price</th>
+        <th>Profit/Loss</th>
+        <th>Date Added</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in portfolio %}
+      <tr>
+        <td>{{ item.symbol }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>${{ "%.2f"|format(item.buy_price) }}</td>
+        <td>
+          {% if item.latest_price %}
+            ${{ "%.2f"|format(item.latest_price) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if item.profit_loss %}
+            ${{ "%.2f"|format(item.profit_loss) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+        <td>{{ item.date_added }}</td>
+        <td>
+          <form action="{{ url_for('delete_holding', holding_id=item.id) }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3>Add New Holding</h3>
+  <form method="post" action="{{ url_for('add_holding') }}">
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <input type="text" name="symbol" class="form-control" placeholder="Symbol (e.g., AAPL)" required>
+      </div>
+      <div class="form-group col-md-2">
+        <input type="number" name="quantity" class="form-control" placeholder="Quantity" required>
+      </div>
+      <div class="form-group col-md-2">
+        <input type="number" name="buy_price" step="0.01" class="form-control" placeholder="Buy Price" required>
+      </div>
+      <div class="form-group col-md-2">
+        <button type="submit" class="btn btn-success">Add</button>
+      </div>
+    </div>
+  </form>
+</div>
+</body>
+</html>
