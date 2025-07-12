@@ -1,23 +1,169 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Stock Analyzer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts for modern typography -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    body {
+      background: #f4f6f8;
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
     header {
+      background: #1a237e;
+      color: #fff;
+      padding: 1.2rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
-      background-color: #f0f0f0;
+      box-shadow: 0 2px 8px rgba(60,72,88,0.08);
     }
-    nav a {
+    header h1 {
+      font-size: 2rem;
+      margin: 0;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    nav {
+      display: flex;
+      align-items: center;
+    }
+    nav span {
+      margin-right: 1rem;
+    }
+    .btn {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      border-radius: 7px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
       margin-left: 1rem;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 7px rgba(60,72,88,0.07);
+      color: #fff;
       text-decoration: none;
-      color: #333;
+      display: inline-block;
+    }
+    .btn-portfolio {
+      background: #2ecc40;
+    }
+    .btn-portfolio:hover, .btn-portfolio:focus {
+      background: #27ae60;
+    }
+    .btn-logout {
+      background: #e74c3c;
+    }
+    .btn-logout:hover, .btn-logout:focus {
+      background: #c0392b;
+    }
+    .btn-login {
+      background: #3949ab;
+    }
+    .btn-login:hover, .btn-login:focus {
+      background: #1a237e;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(60,72,88,0.10);
+    }
+    .stock-form {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .stock-form input[type="text"] {
+      flex: 1 1 250px;
+      padding: 0.7rem;
+      border: 1px solid #b0bec5;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      background: #f9fafb;
+      transition: border 0.2s;
+    }
+    .stock-form input[type="text"]:focus {
+      border-color: #1a237e;
+      outline: none;
+    }
+    .stock-form button {
+      padding: 0.7rem 2rem;
+      background: #3949ab;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(60,72,88,0.05);
+    }
+    .stock-form button:hover, .stock-form button:focus {
+      background: #1a237e;
+      outline: none;
+    }
+    .card {
+      background: #f0f4c3;
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(60,72,88,0.04);
+      transition: box-shadow 0.2s;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #1a237e;
+    }
+    .stock-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+    .stock-info div {
+      flex: 1 1 200px;
+    }
+    .recommendation {
+      margin-top: 1rem;
       font-weight: bold;
+      color: #388e3c;
+      font-size: 1.2rem;
+    }
+    .chart-container {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(60,72,88,0.04);
+      margin-bottom: 2rem;
+    }
+    .error {
+      color: #d32f2f;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    @media (max-width: 700px) {
+      .container {
+        padding: 1rem;
+      }
+      .stock-info {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .chart-container {
+        padding: 0.5rem;
+      }
     }
   </style>
 </head>
@@ -26,27 +172,31 @@
     <h1>Stock Analyzer</h1>
     <nav>
       {% if current_user.is_authenticated %}
-       <div style="float:right;">
-    Welcome, {{ current_user.username }}!
-    <a href="{{ url_for('portfolio') }}" style="margin-left:15px;">Portfolio</a>
-    <a href="{{ url_for('logout') }}" style="margin-left:15px;">Logout</a>
-       </div>
+        <span>
+          Welcome, {{ current_user.username }}!
+        </span>
+        <a href="{{ url_for('portfolio') }}" class="btn btn-portfolio">Portfolio</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-logout">Logout</a>
       {% else %}
-        <a href="{{ url_for('login') }}">Login</a>
-        <a href="{{ url_for('register') }}">Register</a>
+        <a href="{{ url_for('login') }}" class="btn btn-login">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-login">Register</a>
       {% endif %}
     </nav>
   </header>
 
-  <main>
-    <form id="search-form">
+  <div class="container">
+    <form class="stock-form" id="search-form" autocomplete="off">
       <input type="text" id="symbol" placeholder="Enter stock symbol (e.g., AAPL)" required>
       <button type="submit">Analyze</button>
     </form>
     <div id="results"></div>
-    <canvas id="priceChart"></canvas>
-    <canvas id="indicatorChart"></canvas>
-  </main>
+    <div class="chart-container">
+      <canvas id="priceChart" height="260"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="indicatorChart" height="260"></canvas>
+    </div>
+  </div>
 
   <script>
     const form = document.getElementById('search-form');
@@ -60,7 +210,7 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const symbol = document.getElementById('symbol').value.trim();
-      resultsDiv.innerHTML = "Loading...";
+      resultsDiv.innerHTML = "<div class='card'>Loading...</div>";
       if (priceChart) priceChart.destroy();
       if (indicatorChart) indicatorChart.destroy();
 
@@ -69,16 +219,22 @@
         const data = await res.json();
 
         if (data.error) {
-          resultsDiv.innerHTML = `<p class="error">${data.error}</p>`;
+          resultsDiv.innerHTML = `<div class="card error">${data.error}</div>`;
           return;
         }
 
         resultsDiv.innerHTML = `
-          <h2>${data.symbol}</h2>
-          <p><strong>Latest Price:</strong> $${data.latest_price}</p>
-          <p><strong>RSI:</strong> ${data.rsi}</p>
-          <p><strong>20-Day Moving Average:</strong> $${data.moving_average_20}</p>
-          <p><strong>Recommendation:</strong> ${data.recommendation}</p>
+          <div class="card">
+            <h2>${data.symbol}</h2>
+            <div class="stock-info">
+              <div><strong>Latest Price:</strong> $${data.latest_price}</div>
+              <div><strong>RSI:</strong> ${data.rsi}</div>
+              <div><strong>20-Day Moving Avg:</strong> $${data.moving_average_20}</div>
+            </div>
+            <div class="recommendation">
+              Recommendation: ${data.recommendation}
+            </div>
+          </div>
         `;
 
         const dates = data.dates.reverse();
@@ -102,26 +258,36 @@
               {
                 label: 'Close Price',
                 data: closes,
-                borderColor: 'blue',
+                borderColor: '#1a237e',
+                backgroundColor: 'rgba(26,35,126,0.07)',
+                borderWidth: 2,
                 fill: false,
-                tension: 0.1
+                tension: 0.3
               },
               {
-                label: '20-Day Moving Average',
+                label: '20-Day Moving Avg',
                 data: movingAvgArray,
-                borderColor: 'green',
+                borderColor: '#388e3c',
+                backgroundColor: 'rgba(56,142,60,0.07)',
+                borderWidth: 2,
                 fill: false,
-                tension: 0.1
+                borderDash: [5,5],
+                tension: 0.3
               }
             ]
           },
           options: {
             responsive: true,
             plugins: {
+              legend: { position: 'top' },
               title: {
                 display: true,
                 text: 'Price and Moving Average'
               }
+            },
+            scales: {
+              x: { display: true, title: { display: false } },
+              y: { beginAtZero: false }
             }
           }
         });
@@ -134,21 +300,27 @@
               {
                 label: 'RSI',
                 data: rsi,
-                borderColor: 'purple',
+                borderColor: '#7b1fa2',
+                backgroundColor: 'rgba(123,31,162,0.08)',
+                borderWidth: 2,
                 fill: false,
                 yAxisID: 'y1'
               },
               {
                 label: 'MACD Line',
                 data: macdLine,
-                borderColor: 'orange',
+                borderColor: '#ff9800',
+                backgroundColor: 'rgba(255,152,0,0.08)',
+                borderWidth: 2,
                 fill: false,
                 yAxisID: 'y2'
               },
               {
                 label: 'Signal Line',
                 data: signalLine,
-                borderColor: 'red',
+                borderColor: '#d32f2f',
+                backgroundColor: 'rgba(211,47,47,0.08)',
+                borderWidth: 2,
                 fill: false,
                 yAxisID: 'y2'
               }
@@ -157,6 +329,7 @@
           options: {
             responsive: true,
             plugins: {
+              legend: { position: 'top' },
               title: {
                 display: true,
                 text: 'RSI and MACD'
@@ -168,25 +341,21 @@
                 position: 'left',
                 min: 0,
                 max: 100,
-                title: {
-                  display: true,
-                  text: 'RSI'
-                }
+                title: { display: true, text: 'RSI' },
+                grid: { drawOnChartArea: false }
               },
               y2: {
                 type: 'linear',
                 position: 'right',
-                title: {
-                  display: true,
-                  text: 'MACD'
-                }
+                title: { display: true, text: 'MACD' },
+                grid: { drawOnChartArea: false }
               }
             }
           }
         });
 
       } catch (err) {
-        resultsDiv.innerHTML = `<p class="error">Error fetching data.</p>`;
+        resultsDiv.innerHTML = `<div class="card error">Error fetching data.</div>`;
       }
     });
   </script>
