@@ -26,8 +26,11 @@
     <h1>Stock Analyzer</h1>
     <nav>
       {% if current_user.is_authenticated %}
-        <span>Welcome, {{ current_user.username }}!</span>
-        <a href="{{ url_for('logout') }}">Logout</a>
+       <div style="float:right;">
+    Welcome, {{ current_user.username }}!
+    <a href="{{ url_for('portfolio') }}" style="margin-left:15px;">Portfolio</a>
+    <a href="{{ url_for('logout') }}" style="margin-left:15px;">Logout</a>
+       </div>
       {% else %}
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
